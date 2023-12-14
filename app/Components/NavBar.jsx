@@ -4,6 +4,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 const NavBar = () => {
   return (
@@ -16,22 +18,28 @@ const NavBar = () => {
            <SearchIcon style={{ fontSize: 24, color: 'purple' }}/>
            <input type="text" name="" id="" className=' w-full h-full focus:outline-none font-semibold text-lg text-purple-950' />
       </div>
-      <div className='flex text-white mr-6 items-center'>
+      <div className='flex text-white mr-6 items-center gap-2'>
+          <Tooltip title="Dark Mode" arrow>
+      <IconButton>
+      <DarkModeIcon style={{ fontSize: 31, color: 'white' }}/>
+      </IconButton>
+    </Tooltip>      
 
-        <button className='bg-purple-500 hover:bg-purple-600 duration-200 h-[57px] py-3 px-4 w-full'>
-        <DarkModeIcon style={{ fontSize: 28 }}/>
-        </button>
-        
-        <button className='bg-purple-500 hover:bg-purple-600 duration-200 h-[57px] py-3 px-4 w-full'>
-        <AccountCircleIcon style={{ fontSize: 28 }}/>
-        </button>
+        <Tooltip title="User" arrow>
+      <IconButton>
+      <AccountCircleIcon style={{ fontSize: 31, color: 'white' }}/>
+      </IconButton>
+    </Tooltip>
 
-        <button className='bg-purple-500 hover:bg-purple-600 duration-200 h-[57px] py-3 px-4 w-full'>
-        <SettingsIcon style={{ fontSize: 28 }}/>
-        </button>
+
+        <Tooltip title="Settings" arrow>
+      <IconButton>
+        <SettingsIcon style={{ fontSize: 31, color: 'white' }}/>
+      </IconButton>
+    </Tooltip>
       </div>
     </nav>
   )
 }
 
-export default NavBar
+export default NavBar ;
