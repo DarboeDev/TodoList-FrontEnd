@@ -42,15 +42,20 @@ const handleChange=(e)=>{
   const {name,value}=e.target
   setNewTask({...newTask,[name]:value})
 }
-  const getAllTasks = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/`);
-      setAllTasks(response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.log('Error fetching tasks:', error);
-    }
-  };
+const getAllTasks = async () => {
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/`);
+    const data = response.data;
+
+    // Filter tasks with completed: false
+    const uncompletedTasks = data.filter(task => !task.description.completed);
+   setAllTasks(uncompletedTasks)
+    console.log(uncompletedTasks);
+  } catch (error) {
+    console.log('Error fetching tasks:', error);
+  }
+};
+
 
     useEffect(() => {
       getAllTasks();
@@ -58,15 +63,60 @@ const handleChange=(e)=>{
 
    const  addFav = async (id) => {
      try {
-      await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`, ).then(()=>{
-        toast.success("Added to favorites");
+     const result = await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`,{
+        description: {
+            importance: true,
+            // "completed": false                                             
+        }},)
+       if(result.status === 200){
         router.refresh();
         getAllTasks();
-      });
-     } catch (error) {
+       }
+    } catch (error) {
+      console.log(error.message);
+    } finally{
+      toast.success("Added to favorites");
+    }
+  };
+  const completeTask = async (id) => {
+    try {
+    const result =  await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`,{
+        description: {
+            completed: true                                             
+        }},);
+       if(result.status ===200){
+        router.refresh();
+        getAllTasks();
+       }
+         
+    } catch (error) {
+      console.log(error.message);
+    } finally{
+      toast.success("Task completed");
       
-     }
+    }
+}
+  const  removeFav = async (id) => {
+    try {
+    const result =  await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`,{
+       description: {
+           importance: false,
+           // "completed": false                                             
+       }},)
+       if(result.status === 200){
+        router.refresh();
+        getAllTasks();
+       }
+   } catch (error) {
+     console.log(error.message);
+   } finally{
+     toast.success("Removed from favorites");
+     
    }
+ };
+
+
+  
     const addTask = async () => {
         try{
           setLoading(true);
@@ -116,7 +166,7 @@ const handleChange=(e)=>{
            >
             { showAddOptions ?
             <div className='py-2 duration-200'>
-              <input type="checkbox" name="" id="" />
+              <input type="checkbox" name="" id=""/>
               </div>
               :
             <button className='rounded-full p-1 hover:bg-purple-100 duration-200'>
@@ -189,12 +239,13 @@ const handleChange=(e)=>{
          {allTasks && allTasks.map(task => (
                   <div className='flex justify-between custom-shadow bg-white w-full py-2 px-5' key={task._id}>
                     <div className='flex items-center gap-6 w-full'>
-                      <input type="checkbox" name="done" id="done" className='px-3'/>
+                      <input type="checkbox" name="done" id="done" className='px-3'
+                      onClick={()=> completeTask(task._id)} />
                       <h1>{task.title}</h1>
                     </div>
                     {
                       task.description.importance === false ? (
-                        <Tooltip title="Mark task as important" >
+                        <Tooltip title="Mark task as important" onClick={()=> addFav(task._id)} >
                         <IconButton>
                         <StarBorderIcon className='cursor-pointer text-purple-600'
                              style={{ fontSize: 25 }}/> 
@@ -202,8 +253,8 @@ const handleChange=(e)=>{
                        </Tooltip> 
                       ) 
                       :
-                      (
-                        <Tooltip title="Remove as important">
+                      ( 
+                        <Tooltip title="Remove as important" onClick={()=> removeFav(task._id)}>
                         <IconButton>
                         <StarIcon className='cursor-pointer text-purple-600'
                              style={{ fontSize: 25 }}/> 
@@ -211,12 +262,12 @@ const handleChange=(e)=>{
                        </Tooltip> 
                       )
                     }
-                   <Tooltip title="Delete task">
+                   {/* <Tooltip title="Delete task">
                         <IconButton>
                         <DeleteOutlineOutlinedIcon className='cursor-pointer text-red-500'
                              style={{ fontSize: 25 }}/> 
                         </IconButton>
-                       </Tooltip> 
+                       </Tooltip>  */}
                   </div>
                 ))}
         </div>

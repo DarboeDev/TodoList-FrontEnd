@@ -5,6 +5,8 @@ import { GoHome } from "react-icons/go";
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { FiSun } from "react-icons/fi";
 import {useState } from 'react'
+import Link from 'next/link';
+
 
 const SideMenu = ({showMenu, setShowMenu}) => {
 
