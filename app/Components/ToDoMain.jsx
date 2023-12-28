@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect } from 'react'
+import {useState, useRef, useEffect, useContext } from 'react'
 import React from 'react';
 const axios = require('axios');
 import { FiSun } from "react-icons/fi";
@@ -12,12 +12,16 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
 import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
 import SortIcon from '@mui/icons-material/Sort';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { FaLayerGroup } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { DataContext } from '../Context/appContext';
 
-const ToDoMain = ({showMenu, setShowMenu}) => {
+const ToDoMain = () => {
+
+  const {showMenu,setShowMenu } = useContext(DataContext);
+
+
   const router = useRouter();
 
   const [showAddOptions, setShowAddOptions] = useState(false);
@@ -134,10 +138,14 @@ const getAllTasks = async () => {
         }
     }
     if(allTasks.length == null){
-       <h1>No Task yet</h1>
+      return  (
+        <div className="w-[80%] mt-[250px] flex justify-center items-align">
+            <div className="loader"></div> 
+        </div>
+      );
     }else{
   return (
-    <section className='w-full flex flex-col h-screen p-10 bg-gray-100 gap-10'>
+    <section className='w-full flex flex-col p-10 bg-gray-100 gap-10'>
         <div className='flex justify-between' onClick={ ()=> setShowAddOptions(false)}>
           <div className='flex justify-between gap-3'>
           { !showMenu && (
@@ -224,7 +232,7 @@ const getAllTasks = async () => {
                   </IconButton>
               </Tooltip></div>
               <button
-  className={`bg-purple-400 py-1 rounded-sm px-3 text-white font-bold ${
+  className={`bg-purple-500 py-1 rounded-sm px-3 text-white font-bold ${
     newTask.lenght === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-purple-600 duration-200'
   }`}
   onClick={() => addTask()}
