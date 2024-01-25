@@ -22,7 +22,7 @@ const Pages = () => {
   const getAllTasks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/`);
+      const response = await axios.get(`${url}/tasks`);
       const data = response.data;
 
       const completedTasks = data.filter(task => task.description.completed);
@@ -40,7 +40,7 @@ const Pages = () => {
 
   const uncompleteTask = async (id) => {
     try {
-      const result = await axios.put(`${url}/${id}`, {
+      const result = await axios.put(`${url}/tasks/${id}`, {
         description: {
           completed: false,
         },

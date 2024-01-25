@@ -1,45 +1,55 @@
 import {useState, useRef, useEffect, useContext } from 'react'
 import React from 'react';
 const axios = require('axios');
-import { FiSun } from "react-icons/fi";
+import moment from 'moment';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import AddIcon from '@mui/icons-material/Add';
 import MenuIcon from '@mui/icons-material/Menu';
-import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import StarIcon from '@mui/icons-material/Star';
-import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
 import SortIcon from '@mui/icons-material/Sort';
 import { FaLayerGroup } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { DataContext } from '../Context/appContext';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { DarkModeContext } from '../Context/DarkmodeContext';
 import CompleteModal from './CompleteModal';
+import Dropdown from './Dropdown';
+import { GoHome } from "react-icons/go";
+import CalendarDropwdown from './CalendarDropdown';
+import CategoryDropdown from './CategoryDropdown';
+import {useTaskContext} from '../Context/getDataContext'
 
 
 
 
 const ToDoMain = () => {
 
+  const {  allTasks, setAllCategories, allCategories, getAllTasks, getCategories, addFav, completeTask, removeFav } = useTaskContext();
   const {showMenu,setShowMenu } = useContext(DataContext);
-  const [openModal, setOpenModal] = useState(false);
-  const [currentTask,setCurrentTask] = useState('');
-
   const router = useRouter();
-
+  const [openModal, setOpenModal] = useState(false);
+  const [currentTaskID, setCurrentTaskID] = useState('');
   const [showAddOptions, setShowAddOptions] = useState(false);
-  const [allTasks, setAllTasks] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(false);
   const [newTask, setNewTask] = useState({
     title: '',
-    description:{
+    description: {
       importance: false,
+      category: selectedCategory,
     },
-});
+  });
+
+
+const getCategoryColor = (categoryId) => {
+  const category = allCategories.find(category => category._id === categoryId);
+  return category ? category.color : '';
+};
+
+
   const inputRef = useRef(null);
 
     const handleAddIconClick = () => {
@@ -51,84 +61,27 @@ const handleChange=(e)=>{
   const {name,value}=e.target
   setNewTask({...newTask,[name]:value})
 }
-const getAllTasks = async () => {
-  try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_URL}/`);
-    const data = response.data;
 
-    // Filter tasks with completed: false
-    const uncompletedTasks = data.filter(task => !task.description.completed);
-   setAllTasks(uncompletedTasks);
-  } catch (error) {
-    console.log('Error fetching tasks:', error);
-  }
 
+   
+ const handleCategorySelect = (category) => {
+  // Update the newTask state with the selected category
+  setNewTask((prevTask) => ({
+    ...prevTask,
+    description: {
+      ...prevTask.description,
+      category: category._id,
+    },
+  }));
 };
 
-    useEffect(() => {
-      getAllTasks();
-    }, []);
-
-   const  addFav = async (id) => {
-     try {
-     const result = await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`,{
-        description: {
-            importance: true,
-            // "completed": false                                             
-        }},)
-       if(result.status === 200){
-        router.refresh();
-        getAllTasks();
-       }
-    } catch (error) {
-      console.log(error.message);
-    } finally{
-      toast.success("Added to favorites");
-    }
-  };
-  const completeTask = async (id) => {
-    try {
-    const result =  await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`,{
-        description: {
-            completed: true                                             
-        }},);
-       if(result.status ===200){
-        router.refresh();
-        getAllTasks();
-       }
-         
-    } catch (error) {
-      console.log(error.message);
-    } finally{
-      toast.success("Task completed");
-      
-    }
-}
-  const  removeFav = async (id) => {
-    try {
-    const result =  await axios.put(`${process.env.NEXT_PUBLIC_URL}/${id}`,{
-       description: {
-           importance: false,
-           // "completed": false                                             
-       }},)
-       if(result.status === 200){
-        router.refresh();
-        getAllTasks();
-       }
-   } catch (error) {
-     console.log(error.message);
-   } finally{
-     toast.success("Removed from favorites");
-     
-   }
- };
 
 
   
     const addTask = async () => {
         try{
           setLoading(true);
-          await axios.post(`${process.env.NEXT_PUBLIC_URL}/task`, newTask).then(()=>{
+          await axios.post(`${process.env.NEXT_PUBLIC_URL}/tasks/add`, newTask).then(()=>{
             toast.success("Task Added");
             router.refresh();
             getAllTasks();
@@ -141,23 +94,27 @@ const getAllTasks = async () => {
           setLoading(false);
         }
     }
-    if(allTasks.length == null){
+    
+
+    if (loading) { 
       return  (
-        <div className="w-[80%] mt-[250px] flex justify-center items-align">
+        <div className="w-[70%] mt-[250px] flex justify-center items-align">
             <div className="loader"></div> 
         </div>
-      );
-    }else{
+  
+      );    }
+
+
   return (
-    <section className='w-full flex flex-col p-10 bg-gray-100 gap-10'>
+    <section className='w-full min-h-screen flex flex-col p-10 bg-gray-100 gap-10'>
         <div className='flex justify-between' onClick={ ()=> setShowAddOptions(false)}>
           <div className='flex justify-between gap-3'>
           { !showMenu && (
                   <MenuIcon className='cursor-pointer hover:text-gray-600' style={{ fontSize: 28 }} onClick={()=> setShowMenu(true)}/> )
           }
           <div className='flex flex-col gap-2'>
-          <h1 className='flex gap-2 font-semibold text-xl'> {showMenu && <FiSun size={27}/>} My Day</h1>
-          <p className='text-b text-gray-400'>Wednesday, December 13 2023</p>
+          <h1 className='flex gap-2 font-semibold text-xl'> {showMenu && <GoHome size={25} /> } My Tasks</h1>
+          <p className='text-b text-gray-400'>{moment().format('MMMM Do YYYY, h:mm a')}</p>
           </div>
           </div>
           <div className='flex gap-5 text-b text-gray-400'>
@@ -174,7 +131,9 @@ const getAllTasks = async () => {
         </div>
         <div className='flex flex-col custom-shadow'>
           <div className='py-2 px-5 flex gap-3 w-full bg-white'
-           onClick={ ()=> handleAddIconClick()}
+           onClick={ ()=>{ 
+            handleAddIconClick();
+            getCategories()}}
            >
             { showAddOptions ?
             <div className='py-2 duration-200'>
@@ -217,18 +176,13 @@ const getAllTasks = async () => {
           { showAddOptions && ( 
           <div className='px-7 flex mr-0 w-full bg-white custom-shadow-two justify-between items-center'>
             <div className='items-center flex gap-3'>
-              <Tooltip title="Category">
-                  <IconButton>
-                    <WidgetsOutlinedIcon className='cursor-pointer text-purple-300 hover:text-purple-600 '
-                       style={{ fontSize: 25 }}/> 
-                  </IconButton>
-              </Tooltip>   
-              <Tooltip title="Add due day">
-                  <IconButton>
-                  <CalendarMonthOutlinedIcon className='cursor-pointer text-purple-300 hover:text-purple-600 duration-200'
-          style={{ fontSize: 25 }}/> 
-                  </IconButton>
-              </Tooltip> 
+            <CategoryDropdown
+            setSelectedCategory={setSelectedCategory}
+            handleCategorySelect={handleCategorySelect}
+            allCategories={allCategories}
+            setAllCategories={setAllCategories}
+          />               
+          <CalendarDropwdown/>
               <Tooltip title="Remind me">
                   <IconButton>
                   <NotificationsActiveOutlinedIcon className='cursor-pointer text-purple-300 hover:text-purple-600 duration-200'
@@ -246,20 +200,22 @@ const getAllTasks = async () => {
 </button>
           </div>)}
         </div>
-
         <div className='flex gap-2 w-full flex-col justify-center items-center' onClick={ ()=> setShowAddOptions(false)}>
-         {allTasks && allTasks.map(task => (
-                  <div className='flex justify-between custom-shadow bg-white w-full py-2 px-5' key={task._id}>
+                 {allTasks && allTasks.map(task => (
+                  <div
+                    className='flex justify-between custom-shadow bg-white w-full py-2 px-5 rounded'
+                    key={task._id}
+                    onClick={() => setCurrentTaskID(task._id)}
+                    style={{
+                      borderLeft: task.description.category
+                        ? `5px solid ${getCategoryColor(task.description.category)}`
+                        : '5px solid transparent',
+                    }}
+                  >
                     <div className='flex items-center gap-6 w-full'>
-                      <Tooltip title="Complete Task" onClick={()=>{ 
-                        setOpenModal(true);
-                        setCurrentTask(task._id);
-                      }}  arrow>
-                        <CheckCircleIcon className='text-purple-300 hover:text-purple-500'
-                             style={{ fontSize: 25}}/> 
-                       </Tooltip> 
+                      
                        { openModal && (
-                        <CompleteModal completeTask={completeTask} openModal={openModal} setOpenModal={setOpenModal} id={currentTask}/>
+                        <CompleteModal completeTask={completeTask} openModal={openModal} setOpenModal={setOpenModal} id={currentTaskID}/>
                        )
 
                        }
@@ -283,19 +239,18 @@ const getAllTasks = async () => {
                         </IconButton>
                        </Tooltip> 
                       )
-                    }
-                   <Tooltip title="More">
-                        <IconButton>
-                        <MoreVertIcon className='cursor-pointer text-purple-400 hover:text-purple-500'
-                             style={{ fontSize: 25 }}/> 
-                        </IconButton>
-                       </Tooltip> 
+                    } <div onClick={()=>{ setCurrentTaskID(task._id);console.log(currentTaskID);}}>
+                      <Dropdown setOpenModal={setOpenModal} currentTaskID={currentTaskID} getAllTasks={getAllTasks} />
+
+                      {/* setOpenModal(true);
+                        setCurrentTask(task._id) */}
+                  </div>
                   </div>
                 ))}
         </div>
     </section>
   )
                   }
-}
+
 
 export default ToDoMain
