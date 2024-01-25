@@ -16,11 +16,18 @@ import { FaLayerGroup } from "react-icons/fa";
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { DataContext } from '../Context/appContext';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CompleteModal from './CompleteModal';
+
+
+
 
 const ToDoMain = () => {
 
   const {showMenu,setShowMenu } = useContext(DataContext);
-
+  const [openModal, setOpenModal] = useState(false);
+  const [currentTask,setCurrentTask] = useState('');
 
   const router = useRouter();
 
@@ -33,8 +40,6 @@ const ToDoMain = () => {
       importance: false,
     },
 });
-  const url = process.env.NEXT_PUBLIC_URL;
-console.log(url); 
   const inputRef = useRef(null);
 
     const handleAddIconClick = () => {
@@ -53,13 +58,12 @@ const getAllTasks = async () => {
 
     // Filter tasks with completed: false
     const uncompletedTasks = data.filter(task => !task.description.completed);
-   setAllTasks(uncompletedTasks)
-    console.log(uncompletedTasks);
+   setAllTasks(uncompletedTasks);
   } catch (error) {
     console.log('Error fetching tasks:', error);
   }
-};
 
+};
 
     useEffect(() => {
       getAllTasks();
@@ -247,13 +251,23 @@ const getAllTasks = async () => {
          {allTasks && allTasks.map(task => (
                   <div className='flex justify-between custom-shadow bg-white w-full py-2 px-5' key={task._id}>
                     <div className='flex items-center gap-6 w-full'>
-                      <input type="checkbox" name="done" id="done" className='px-3'
-                      onClick={()=> completeTask(task._id)} />
+                      <Tooltip title="Complete Task" onClick={()=>{ 
+                        setOpenModal(true);
+                        setCurrentTask(task._id);
+                      }}  arrow>
+                        <CheckCircleIcon className='text-purple-300 hover:text-purple-500'
+                             style={{ fontSize: 25}}/> 
+                       </Tooltip> 
+                       { openModal && (
+                        <CompleteModal completeTask={completeTask} openModal={openModal} setOpenModal={setOpenModal} id={currentTask}/>
+                       )
+
+                       }
                       <h1>{task.title}</h1>
                     </div>
                     {
                       task.description.importance === false ? (
-                        <Tooltip title="Mark task as important" onClick={()=> addFav(task._id)} >
+                        <Tooltip title="Mark task as important" onClick={()=> addFav(task._id)} arrow>
                         <IconButton>
                         <StarBorderIcon className='cursor-pointer text-purple-600'
                              style={{ fontSize: 25 }}/> 
@@ -270,12 +284,12 @@ const getAllTasks = async () => {
                        </Tooltip> 
                       )
                     }
-                   {/* <Tooltip title="Delete task">
+                   <Tooltip title="More">
                         <IconButton>
-                        <DeleteOutlineOutlinedIcon className='cursor-pointer text-red-500'
+                        <MoreVertIcon className='cursor-pointer text-purple-400 hover:text-purple-500'
                              style={{ fontSize: 25 }}/> 
                         </IconButton>
-                       </Tooltip>  */}
+                       </Tooltip> 
                   </div>
                 ))}
         </div>

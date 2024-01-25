@@ -5,7 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { IoCalendarOutline } from "react-icons/io5";
 import { GoHome } from "react-icons/go";
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { FiSun } from "react-icons/fi";
 import { useState } from 'react';
 import Link from 'next/link';
@@ -63,7 +63,7 @@ const SideMenu = () => {
             :
             'flex items-center gap-5 p-2 py-3 hover:bg-purple-100 duration-200 pl-10'}
             onClick={() => handleLinkClick('completed')}>
-            <TaskAltIcon size={25} />
+            <CheckCircleOutlineIcon size={25} />
             <h1>Completed</h1>
           </Link>
         </div>
