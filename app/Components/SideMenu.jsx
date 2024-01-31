@@ -24,7 +24,7 @@ const SideMenu = () => {
 
   if (showMenu) {
     return (
-<div className={` flex flex-col gap-4 w-[300px] py-10 custom-shadow min-h-screen duration-400 ${darkMode ? 'bg-dark-sidebar' : 'bg-white'}`}>
+<div className={` overflow-x-hidden flex flex-col gap-4 w-[300px] py-10 custom-shadow min-h-screen duration-400 ${darkMode ? 'bg-dark-sidebar' : 'bg-white'}`}>
   <MenuIcon
     className={`ml-6 cursor-pointer ${darkMode ? 'text-gray-200 hover:text-gray-300' : 'text-black hover:text-gray-600'}`}
     style={{ fontSize: 28 }}

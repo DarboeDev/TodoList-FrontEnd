@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext} from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import AddIcon from '@mui/icons-material/Add';
 import CategoryModal from './CategoryModal'; 
 import { DeleteOutlined, EditNote } from '@mui/icons-material';
+import { DarkModeContext } from '../Context/DarkmodeContext';
+import DeleteCategory from './DeleteCategory';
 
 const CategorySection = () => {
   const [categories, setCategories] = useState([]);
+  const {darkMode} = useContext(DarkModeContext);
   const [openModal, setOpenModal] = useState(false);
   const [editCategories, setEditCategories] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const getCategories = async () => {
     try {
@@ -50,7 +54,7 @@ const CategorySection = () => {
   return (
     <div className='w-full pl-6 pr-2 flex flex-col gap-3' >
       <div className='flex w-full justify-between items-center'>
-      <h1 className='text-gray-500 font-semibold'>Category</h1>
+      <h1 className={darkMode? "text-white font-bold" : 'text-gray-500 font-semibold'}>Category</h1>
       <EditNote
        onClick={()=> setEditCategories(!editCategories)}
        style={{ fontSize: 25 }} 
@@ -66,11 +70,19 @@ const CategorySection = () => {
               backgroundColor: category.color,
             }}
             ></div>
-            {category.name}
+            <h1 className={darkMode? "text-white" : 'text-black font-semibold'}>{category.name}</h1>
             </div>
+            {
+        deleteModal &&
+        <DeleteCategory
+        id={category._id}
+        deleteCategory={deleteCategory}
+        setDeleteModal={setDeleteModal}
+        />
+      }
             { editCategories && <div className="hover:bg-red-100 rounded-full p-1 flex justify-center items-center">
               <DeleteOutlined 
-              onClick={()=> deleteCategory(category._id)}
+              onClick={()=> setDeleteModal(true)}
               style={{ fontSize: 19 }} 
               className='text-red-500'/>
              </div>}
@@ -80,7 +92,7 @@ const CategorySection = () => {
      { editCategories &&(
       <div className='w-full flex pt-3 justify-center items-center'>          
         <button
-          className='w-[80%] items-center justify-center bg-purple-400 rounded-lg hover:bg-purple-500 duration-300'
+          className='w-[80%] items-center justify-center bg-purple-500 rounded-lg hover:bg-purple-500 duration-300'
           onClick={handleAddButtonClick}
         >
           <AddIcon style={{ fontSize: 32 }} className='text-white'/>
@@ -94,6 +106,7 @@ const CategorySection = () => {
         onCategoryAdd={handleCategoryAdd}
       />
       )}
+     
     </div>
   );
 };

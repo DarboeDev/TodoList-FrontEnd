@@ -76,8 +76,12 @@ const Pages = () => {
     return (
       <section className='w-full flex flex-col p-10 bg-gray-100 gap-10'>
         <div className='flex gap-3'>
-          { !showMenu && (
-                  <MenuIcon className='cursor-pointer hover:text-gray-600' style={{ fontSize: 28 }} onClick={()=> setShowMenu(true)}/> )
+        { !showMenu && (
+                  <MenuIcon 
+                  className={`ml-6 cursor-pointer ${darkMode ? 'text-gray-200 hover:text-gray-300' : 'text-black hover:text-gray-600'}`}
+
+                  style={{ fontSize: 28 }} 
+                  onClick={()=> setShowMenu(true)}/> )
           }
           <div className='flex flex-col gap-2'>
           <h1 className='flex gap-2 font-semibold text-xl'> {showMenu && <TaskAltIcon size={27}/>} Completed Tasks</h1>

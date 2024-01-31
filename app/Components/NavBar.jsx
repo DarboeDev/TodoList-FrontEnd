@@ -62,11 +62,6 @@ const NavBar = () => {
       </IconButton>
     </Tooltip>
 }
-        <Tooltip title="Settings" arrow>
-      <IconButton>
-        <SettingsIcon style={{ fontSize: 31}} className={`${darkMode ? 'text-purple-500' : 'text-white'}`}/>
-      </IconButton>
-    </Tooltip>
       </div>
     </nav>
   )

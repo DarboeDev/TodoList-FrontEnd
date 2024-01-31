@@ -30,6 +30,13 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    getAllTasks();
+    getCategories();
+    console.log(allCategories)
+
+  }, []);
+
   const addFav = async (id) => {
     try {
       const result = await axios.put(`${process.env.NEXT_PUBLIC_URL}/tasks/${id}`, {
@@ -75,13 +82,10 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    getAllTasks();
-    getCategories();
-  }, []);
+
 
   return (
-    <TaskContext.Provider value={{ allTasks, allCategories, setAllCategories, getAllTasks, getCategories, addFav, completeTask, removeFav }}>
+    <TaskContext.Provider value={{ allTasks, setAllTasks, allCategories, setAllCategories, getAllTasks, getCategories, addFav, completeTask, removeFav }}>
       {children}
     </TaskContext.Provider>
   );

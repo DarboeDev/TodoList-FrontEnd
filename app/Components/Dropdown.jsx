@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter, router } from 'next/navigation';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,8 +7,13 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import EditModal from './EditModal';
 import DeleteModal from './DeleteModal';
+import { DarkModeContext } from '../Context/DarkmodeContext';
+
 
 export default function Dropdown({ setOpenModal, currentTaskID, getAllTasks }) {
+
+  const {darkMode} = useContext(DarkModeContext);
+
 const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -35,7 +40,7 @@ const router = useRouter()
       <Tooltip title="More" onClick={handleClick}>
         <IconButton>
           <MoreVertIcon
-            className='cursor-pointer text-purple-400 hover:text-purple-500'
+            className='cursor-pointer text-purple-500 hover:text-purple-600'
             style={{ fontSize: 25 }}
           />
         </IconButton>

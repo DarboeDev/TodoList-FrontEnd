@@ -99,8 +99,8 @@ const Page = () => {
       const data = response.data;
 
       // Filter tasks with completed: false
-      const important = data.filter(task => task.description.importance);
-     setAllTasks(important);
+      const planned = data.filter(task => task.description.duedate);
+     setAllTasks(planned);
     } catch (error) {
       console.log('Error fetching tasks:', error);
     }
@@ -142,16 +142,16 @@ const Page = () => {
       <section className={darkMode ? 'w-full min-h-screen flex flex-col p-10 bg-main-dark gap-10' :'w-full min-h-screen flex flex-col p-10 bg-gray-100 gap-10'}>
       <div className="flex justify-between" onClick={() => setShowAddOptions(false)}>
           <div className="flex justify-between gap-3">
-            {!showMenu && (
-              <MenuIcon
-                className="cursor-pointer hover:text-gray-600"
-                style={{ fontSize: 28 }}
-                onClick={() => setShowMenu(true)}
-              />
-            )}
+          { !showMenu && (
+                  <MenuIcon 
+                  className={`ml-6 cursor-pointer ${darkMode ? 'text-gray-200 hover:text-gray-300' : 'text-black hover:text-gray-600'}`}
+
+                  style={{ fontSize: 28 }} 
+                  onClick={()=> setShowMenu(true)}/> )
+          }
             <div className="flex flex-col gap-2">
             <h1 className={darkMode? "text-white flex gap-2 font-semibold text-xl" : 'text-black flex gap-2 font-semibold text-xl'}>
-                {showMenu && <StarOutlineIcon style={{ fontSize: 25 }} />}Important tasks
+                {showMenu && <StarOutlineIcon style={{ fontSize: 25 }} />}Planned Tasks
               </h1>
               <p className="text-b text-gray-400">{moment().format('MMMM Do YYYY, h:mm a')}</p>
             </div>
